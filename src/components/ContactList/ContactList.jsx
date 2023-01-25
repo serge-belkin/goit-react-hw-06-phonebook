@@ -1,32 +1,60 @@
 import propTypes from 'prop-types';
 import css from './ContactList.module.css';
+import { removeContacts } from 'redux/contactsSlice';
+import { useDispatch, useSelector } from 'react-redux';
 
-export const ContactList = ({ contacts, handleDelete}) => (
-  <div>
+const ContactItem = ({ idx, name, number, onRemove }) => {
+  return (
+    <li className={css.contactListItem}>
+      <p>
+        {name}: {number}
+      </p>
+      <button
+        type="button"
+        className={css.deleteBtn}
+        onClick={() => {
+          onRemove(idx);
+        }}
+      >
+        Remove
+      </button>
+    </li>
+  );
+};
+
+export const ContactList = () => {
+  const dispatch = useDispatch();
+  const filter = useSelector(state => state.filter.status);
+  const contacts = useSelector(state => state.contacts.items);
+
+  const visibleContacts = contacts.filter(contact =>
+    contact.name.toLowerCase().includes(filter)
+  );
+  return (
     <ul className={css.contactList}>
-      {contacts.map((contact, id, number) => (
-        <li key={id} className={css.contactListItem}> 
-          {contact.name}: {contact.number}
-          <button
-            type="button"
-            className={css.deleteBtn}
-            onClick={() => handleDelete(contact.id)}
-          >
-            Delete
-          </button>
-        </li>
+      {visibleContacts.map(({ id, name, number }, index) => (
+        <ContactItem
+          key={id}
+          name={name}
+          number={number}
+          idx={id}
+          onRemove={() => {
+            dispatch(removeContacts(id));
+          }}
+        />
       ))}
     </ul>
-  </div>
-);
+  );
+};
 
 ContactList.propTypes = {
-  contacts: propTypes.arrayOf(
-    propTypes.exact({
-      id: propTypes.string.isRequired,
-      name: propTypes.string.isRequired,
-      number: propTypes.string.isRequired,
-    })
-  ),
-  handleDelete: propTypes.func.isRequired,
+  contacts: propTypes.array,
+  onRemove: propTypes.func,
+};
+
+ContactItem.propTypes = {
+  idx: propTypes.string,
+  name: propTypes.string,
+  number: propTypes.string,
+  onRemove: propTypes.func,
 };
