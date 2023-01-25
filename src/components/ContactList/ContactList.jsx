@@ -8,8 +8,7 @@ const ContactItem = ({ idx, name, number, onRemove }) => {
     <li className={css.contactListItem}>
       <p>
         {name}: {number}
-      </p>
-      <button
+        <button
         type="button"
         className={css.deleteBtn}
         onClick={() => {
@@ -18,6 +17,8 @@ const ContactItem = ({ idx, name, number, onRemove }) => {
       >
         Remove
       </button>
+      </p>
+      
     </li>
   );
 };
